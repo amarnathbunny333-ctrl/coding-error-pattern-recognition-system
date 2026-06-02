@@ -1,0 +1,1 @@
+print("Coding Error Pattern Recognition System Started")
