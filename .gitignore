@@ -11,6 +11,12 @@ reports/
 # IDE files
 .vscode/
 
+# Temporary generated code files
+*.cpp
+*.exe
+*.o
+*.out
+
 # OS files
 .DS_Store
 Thumbs.db

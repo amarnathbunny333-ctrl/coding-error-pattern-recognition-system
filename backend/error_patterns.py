@@ -1,18 +1,31 @@
 ERROR_PATTERNS = {
+    "SyntaxError": {
+        "meaning": "Your code has incorrect syntax.",
+        "suggestion": "Check missing symbols like :, (), {}, or indentation."
+    },
 
-    "SyntaxError":
-        "Check for missing colons (:), brackets, or quotes.",
+    "NameError": {
+        "meaning": "You used a variable before defining it.",
+        "suggestion": "Define the variable before using it."
+    },
 
-    "NameError":
-        "A variable is being used before it is defined.",
+    "TypeError": {
+        "meaning": "You are using incompatible data types.",
+        "suggestion": "Check variable types before operations."
+    },
 
-    "ZeroDivisionError":
-        "You cannot divide a number by zero.",
+    "ZeroDivisionError": {
+        "meaning": "You tried to divide a number by zero.",
+        "suggestion": "Avoid dividing by zero."
+    },
 
-    "TypeError":
-        "An operation was performed on incompatible data types.",
+    "IndentationError": {
+        "meaning": "Your code indentation is incorrect.",
+        "suggestion": "Fix indentation (use proper spaces)."
+    },
 
-    "IndexError":
-        "The list index is outside the valid range."
+    "ReferenceError": {
+        "meaning": "Variable is not declared (common in JS).",
+        "suggestion": "Declare the variable before use."
+    }
 }
-print(ERROR_PATTERNS["NameError"])

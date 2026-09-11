@@ -1,56 +1,61 @@
-from error_patterns import ERROR_PATTERNS
-
-
-def save_report(text):
-
-    with open("reports/error_report.txt", "a") as file:
-        file.write(text)
-        file.write("\n" + "=" * 50 + "\n")
+from backend.language_detector import detect_language
+from backend.compiler_engine import (
+    run_python,
+    run_cpp,
+    run_java,
+    run_js
+)
+from backend.error_parser import parse_error
+from backend.error_patterns import ERROR_PATTERNS
 
 
 def analyze_code(code):
 
-    try:
-        exec(code)
+    language = detect_language(code)
 
-        result = f"""
-Analysis Result
-----------------
-Code       : {code}
-Status     : No Errors Found
-"""
+    print("Detected Language:", language)
 
-        print(result)
-        save_report(result)
+    # run code based on language
+    if language == "python":
+        output = run_python(code)
 
-    except Exception as e:
+    elif language == "cpp":
+        output = run_cpp(code)
 
-        error_type = type(e).__name__
+    elif language == "java":
+        output = run_java(code)
 
-        result = f"""
-Analysis Result
-----------------
-Code       : {code}
+    elif language == "js":
+        output = run_js(code)
 
-Error Type : {error_type}
-Message    : {e}
-Suggestion : {ERROR_PATTERNS.get(error_type, "No suggestion available")}
-"""
+    else:
+        output = "Unsupported language"
 
-        print(result)
-        save_report(result)
+    # parse error
+    parsed = parse_error(language, output)
 
+    # suggestion
+    suggestion = ERROR_PATTERNS.get(parsed["error_type"], "No suggestion available")
 
-# ---------------- USER INPUT MODE ----------------
-print("\nCODING ERROR PATTERN SYSTEM")
-print("=" * 40)
+    final_result = {
+        "language": language,
+        "error_type": parsed["error_type"],
+        "message": parsed["message"],
+        "line": parsed["line"],
+        "suggestion": suggestion
+    }
 
-while True:
+    print("\n=== ANALYSIS RESULT ===")
+    print(final_result)
 
-    user_code = input("\nEnter Python code to analyze (or type 'exit' to stop):\n")
+    return final_result
 
-    if user_code.lower() == "exit":
-        print("Exiting system... Goodbye!")
-        break
+if __name__ == "__main__":
 
-    analyze_code(user_code)
+    test_code = """
+    #include<iostream> using namespace std;
+
+    int main(){ cout << x;} #change this for testing
+      """
+    
+    analyze_code(test_code)

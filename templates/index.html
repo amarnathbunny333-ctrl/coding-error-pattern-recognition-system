@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Coding Error Pattern Recognition System - Code Error Pattern Recognition and Interactive Resolution System">
+    <title>Coding Error Pattern Recognition System</title>
+    
+    <!-- Modern Typography -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-base: #080c14;
+            --bg-surface: #101622;
+            --bg-surface-hover: #171f30;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-focus: #6366f1;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --color-primary: #6366f1;
+            --color-primary-glow: rgba(99, 102, 241, 0.15);
+            --color-success: #10b981;
+            --color-success-glow: rgba(16, 185, 129, 0.15);
+            --color-danger: #f43f5e;
+            --color-danger-glow: rgba(244, 63, 94, 0.15);
+            --color-warning: #fbbf24;
+            --color-warning-glow: rgba(251, 191, 36, 0.15);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Header Style */
+        header {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-logo span {
+            background: var(--color-primary);
+            color: white;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            -webkit-text-fill-color: initial;
+        }
+
+        /* Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            padding: 24px;
+            flex: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.25);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* Editor Styles */
+        .editor-container {
+            position: relative;
+            flex: 1;
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        textarea {
+            width: 100%;
+            flex: 1;
+            background: #090d16;
+            color: #e2e8f0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px var(--color-primary-glow);
+        }
+
+        /* Buttons and CTAs */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--color-primary-glow);
+        }
+
+        .btn-success {
+            background: var(--color-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--color-success-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-surface-hover);
+            border-color: var(--text-secondary);
+        }
+
+        .btn-danger {
+            background: var(--color-danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e11d48;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--color-danger-glow);
+        }
+
+        /* Pill System */
+        .pill {
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pill-blue {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .pill-red {
+            background: var(--color-danger-glow);
+            color: #fda4af;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        .pill-green {
+            background: var(--color-success-glow);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .pill-orange {
+            background: var(--color-warning-glow);
+            color: #fde047;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        /* Resolution Box */
+        .resolution-box {
+            display: none;
+            background: rgba(16, 185, 129, 0.03);
+            border: 1px dashed rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 16px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .resolution-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #34d399;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .code-pre {
+            background: #05080e;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #34d399;
+            overflow-x: auto;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        /* Outputs and Pre-blocks */
+        pre {
+            background: #05080e;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        /* Info Banners */
+        .info-banner {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-surface-hover);
+            border-left: 4px solid var(--color-primary);
+            color: var(--text-secondary);
+        }
+
+        /* Side Panels - Columns */
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* AI Assistant Box */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 300px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            background: #090d16;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        .chat-bubble-user {
+            background: var(--color-primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-bubble-ai {
+            background: var(--bg-surface-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-row input {
+            flex: 1;
+            background: #090d16;
+            color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .chat-input-row input:focus {
+            border-color: var(--border-focus);
+        }
+
+        /* Insights grid */
+        .insight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .insight-tile {
+            background: var(--bg-surface-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .insight-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .insight-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Dashboard Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .stat-card {
+            background: var(--bg-surface-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 8px;
+        }
+
+        .stat-num {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Code highlight line style */
+        .error-code-highlight {
+            border-left: 3px solid var(--color-danger);
+            background: rgba(244, 63, 94, 0.04);
+            padding-left: 8px;
+            margin: 4px 0;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-logo">
+            🤖 Coding Error Pattern Recognition System <span>PRO</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <a href="/static/Literature_Review_Report.docx" download class="btn-primary" style="text-decoration: none; padding: 6px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; border-radius: 6px;">
+                📥 Download Survey Report (DOCX)
+            </a>
+            <div class="pill pill-blue">
+                <span id="detectedLangIndicator">Python (Auto-detect)</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="workspace">
+
+        <!-- LEFT COLUMN (Code and Fixes) -->
+        <div class="column">
+            
+            <!-- Code Editor Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Interactive Workspace</h3>
+                    <div id="editorStatusPill" class="pill pill-blue">Ready</div>
+                </div>
+                
+                <div class="editor-container">
+                    <textarea id="codeArea" placeholder="Write or paste your code here... (Python, C++, Java, JS)
+
+Example Python error:
+for i in range(5)
+    print(i)
+" spellcheck="false"></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-success" id="btnRunCode" onclick="runCode()">
+                        <span>▶</span> Run Code
+                    </button>
+                    <button class="btn-primary" id="btnAnalyze" onclick="analyzeCode()">
+                        <span>🔍</span> Run Analysis
+                    </button>
+                    <button class="btn-secondary" id="btnAutoFix" onclick="autoFixCode()">
+                        <span>🛠</span> Auto Fix Format
+                    </button>
+                </div>
+            </div>
+
+            <!-- Resolution Suggestion Box -->
+            <div class="card resolution-box" id="resolutionContainer">
+                <div class="resolution-title">
+                    <span>💡</span> Suggested Resolution Available
+                </div>
+                <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 12px;">
+                    We detected a structural issue and generated a corrected code block below. You can apply it directly to your editor.
+                </p>
+                <pre class="code-pre"><code id="resolvedCodeBlock"></code></pre>
+                <button class="btn-success" style="width: 100%;" onclick="applyResolution()">
+                    <span>🛠</span> Apply Resolution & Re-Run
+                </button>
+            </div>
+
+            <!-- Dashboard Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Error Statistics Dashboard</h3>
+                    <button class="btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="loadStats()">↻ Refresh</button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-num" id="statTotalErrors">0</div>
+                        <div class="stat-label">Total Logs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" style="font-size:16px; word-break:break-all;" id="statMostCommon">None</div>
+                        <div class="stat-label">Most Common</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" style="font-size:16px; word-break:break-all;" id="statLeastCommon">None</div>
+                        <div class="stat-label">Least Common</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN (Analysis, Console, and Chat) -->
+        <div class="column">
+            
+            <!-- Analysis Insights -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Pattern Insights & Explanation</h3>
+                </div>
+                
+                <div id="resultBox">
+                    <div class="info-banner">
+                        Write code in the editor and click "Run Analysis" to extract structural insights, error positions, and fixes.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Execution Console Output -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Execution Console</h3>
+                </div>
+                <pre style="min-height: 100px; max-height: 200px;" id="executionOutput">Terminal output will be displayed here...</pre>
+            </div>
+
+            <!-- AI Chat Assistant -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">AI Chat Assistant</h3>
+                    <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="clearChat()">Clear</button>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatBox">
+                        <div class="chat-bubble chat-bubble-ai">
+                            Hello! I am your Coding Error Pattern Recognition Assistant. If you have any errors, paste them here or ask me how to fix them!
+                        </div>
+                    </div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" placeholder="Ask details about an error or coding concept..." onkeydown="if(event.key === 'Enter') sendChat()">
+                        <button class="btn-primary" onclick="sendChat()">Send</button>
+                        <button class="btn-secondary" onclick="startVoiceInput()" title="Voice Input">🎙</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Run History -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Activity History</h3>
+                    <button class="btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="loadHistory()">📜 Load</button>
+                </div>
+                <div id="historyBox" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-size: 13px; color: var(--text-secondary); text-align: center; padding: 12px;">
+                        Click "Load" to view your historical runs.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        let currentResolvedCode = null;
+
+        // Auto-detect Language UI Indicator
+        document.getElementById("codeArea").addEventListener("input", function() {
+            let code = this.value;
+            let detected = detectLanguageLocally(code);
+            document.getElementById("detectedLangIndicator").textContent = detected.toUpperCase() + " (Detected)";
+        });
+
+        function detectLanguageLocally(code) {
+            if (code.includes("public class")) return "java";
+            if (code.includes("#include")) return "cpp";
+            if (code.includes("console.log")) return "javascript";
+            return "python";
+        }
+
+        // ================= ANALYZE =================
+        async function analyzeCode() {
+            let code = document.getElementById("codeArea").value;
+            if (!code.trim()) {
+                alert("Please write some code first.");
+                return;
+            }
+
+            document.getElementById("editorStatusPill").className = "pill pill-orange";
+            document.getElementById("editorStatusPill").textContent = "Analyzing...";
+
+            let formData = new FormData();
+            formData.append("code", code);
+
+            try {
+                let res = await fetch("/analyze", {
+                    method: "POST",
+                    body: formData
+                });
+                let data = await res.json();
+
+                // Update Status Pill
+                if (data.success) {
+                    document.getElementById("editorStatusPill").className = "pill pill-green";
+                    document.getElementById("editorStatusPill").textContent = "Success";
+                } else {
+                    document.getElementById("editorStatusPill").className = "pill pill-red";
+                    document.getElementById("editorStatusPill").textContent = "Error Found";
+                }
+
+                // Render Insights HTML
+                let html = `
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div class="insight-grid">
+                            <div class="insight-tile">
+                                <div class="insight-label">Detected Language</div>
+                                <div class="insight-value" style="text-transform: capitalize;">${data.language}</div>
+                            </div>
+                            <div class="insight-tile">
+                                <div class="insight-label">Status</div>
+                                <div class="insight-value">${data.success ? '<span style="color:#10b981;">Passed</span>' : '<span style="color:#f43f5e;">Failed</span>'}</div>
+                            </div>
+                        </div>
+                `;
+
+                if (data.analysis && !data.success) {
+                    let ana = data.analysis;
+                    let rowVal = ana.line_number !== null ? ana.line_number : "N/A";
+                    let colVal = ana.column_number !== null ? ana.column_number : "N/A";
+
+                    html += `
+                        <div class="insight-grid">
+                            <div class="insight-tile" style="border-color: rgba(244, 63, 94, 0.2)">
+                                <div class="insight-label" style="color: #fda4af;">Error Row (Line)</div>
+                                <div class="insight-value" style="font-family: 'Fira Code', monospace; color: #fda4af;">${rowVal}</div>
+                            </div>
+                            <div class="insight-tile" style="border-color: rgba(244, 63, 94, 0.2)">
+                                <div class="insight-label" style="color: #fda4af;">Error Column</div>
+                                <div class="insight-value" style="font-family: 'Fira Code', monospace; color: #fda4af;">${colVal}</div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="background: rgba(244, 63, 94, 0.02); border-color: rgba(244, 63, 94, 0.2);">
+                            <div style="font-size: 13px; font-weight: 700; color: #fda4af; text-transform: uppercase;">
+                                ${ana.error_type || "Execution Error"}
+                            </div>
+                            <div style="font-size: 14.5px; font-weight: 500; color: var(--text-primary); margin-top: 4px;">
+                                ${ana.message || "An execution error occurred."}
+                            </div>
+                        </div>
+
+                        <div class="card" style="background: rgba(99, 102, 241, 0.02); border-color: var(--border-color);">
+                            <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">
+                                Explanation / Meaning
+                            </div>
+                            <div style="font-size: 14px; line-height: 1.5; margin-top: 4px;">
+                                ${ana.meaning || "Click run code to get error details."}
+                            </div>
+                        </div>
+
+                        <div class="card" style="background: rgba(251, 191, 36, 0.02); border-color: rgba(251, 191, 36, 0.15);">
+                            <div style="font-size: 12px; font-weight: 700; color: #fde047; text-transform: uppercase;">
+                                Actionable Suggestion
+                            </div>
+                            <div style="font-size: 14px; line-height: 1.5; margin-top: 4px;">
+                                ${ana.suggestion || "Look at the variables and syntax around the specified line."}
+                            </div>
+                        </div>
+                    `;
+
+                    if (ana.error_line_content) {
+                        html += `
+                            <div class="card" style="background:#05080e; padding:12px;">
+                                <div class="insight-label">Line of Code with Error</div>
+                                <div class="error-code-highlight" style="font-family:'Fira Code', monospace; font-size:13px; color:#e2e8f0;">
+                                    ${escapeHtml(ana.error_line_content)}
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    // Handle resolution Suggestion block
+                    if (ana.resolved_code) {
+                        showResolution(ana.resolved_code);
+                    } else {
+                        showResolution(null);
+                    }
+
+                } else {
+                    html += `
+                        <div class="info-banner" style="border-left-color: var(--color-success); color: #a7f3d0;">
+                            ✨ Code execution succeeded with no syntax errors.
+                        </div>
+                    `;
+                    showResolution(null);
+                }
+
+                html += `</div>`;
+                document.getElementById("resultBox").innerHTML = html;
+
+                // Load Stats Automatically
+                loadStats();
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById("editorStatusPill").className = "pill pill-red";
+                document.getElementById("editorStatusPill").textContent = "Network Error";
+            }
+        }
+
+        // ================= RESOLUTION ACTIONS =================
+        function showResolution(resolvedCode) {
+            let container = document.getElementById("resolutionContainer");
+            if (resolvedCode) {
+                currentResolvedCode = resolvedCode;
+                document.getElementById("resolvedCodeBlock").textContent = resolvedCode;
+                container.style.display = "block";
+            } else {
+                currentResolvedCode = null;
+                container.style.display = "none";
+            }
+        }
+
+        function applyResolution() {
+            if (currentResolvedCode) {
+                document.getElementById("codeArea").value = currentResolvedCode;
+                showResolution(null);
+                document.getElementById("resultBox").innerHTML = `
+                    <div class="info-banner" style="border-left-color: var(--color-success);">
+                        🛠 Fix applied! Re-running execution and analysis...
+                    </div>
+                `;
+                runCode();
+                setTimeout(analyzeCode, 300);
+            }
+        }
+
+        // ================= RUN CODE =================
+        async function runCode() {
+            let code = document.getElementById("codeArea").value;
+            if (!code.trim()) {
+                alert("Please enter code first.");
+                return;
+            }
+
+            document.getElementById("executionOutput").textContent = "Running code in sandbox...";
+            let language = detectLanguageLocally(code);
+
+            try {
+                let res = await fetch("/run", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ code: code, language: language })
+                });
+
+                let data = await res.json();
+                document.getElementById("executionOutput").textContent = data.output || "Code completed execution (no output returned).";
+
+            } catch (err) {
+                document.getElementById("executionOutput").textContent = "Execution failed due to server error: " + err.message;
+            }
+        }
+
+        // ================= AUTO FIX FORMAT =================
+        async function autoFixCode() {
+            let code = document.getElementById("codeArea").value;
+            if (!code.trim()) return;
+
+            try {
+                let res = await fetch("/auto-fix", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ code })
+                });
+                let data = await res.json();
+
+                document.getElementById("codeArea").value = data.fixed;
+                document.getElementById("executionOutput").textContent = "Auto-fix formatter applied: " + data.message;
+                
+                // Trigger localized language refresh
+                let detected = detectLanguageLocally(data.fixed);
+                document.getElementById("detectedLangIndicator").textContent = detected.toUpperCase() + " (Detected)";
+
+            } catch (err) {
+                console.error("Auto fix failed", err);
+            }
+        }
+
+        // ================= CHAT =================
+        async function sendChat() {
+            let input = document.getElementById("chatInput");
+            let msg = input.value.trim();
+            if (!msg) return;
+
+            let box = document.getElementById("chatBox");
+            box.innerHTML += `<div class="chat-bubble chat-bubble-user">${escapeHtml(msg)}</div>`;
+            input.value = "";
+            box.scrollTop = box.scrollHeight;
+
+            let code = document.getElementById("codeArea").value;
+            let error = document.getElementById("executionOutput").textContent;
+
+            try {
+                let res = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: msg, code: code, error: error })
+                });
+                let data = await res.json();
+
+                box.innerHTML += `<div class="chat-bubble chat-bubble-ai">${escapeHtml(data.reply)}</div>`;
+                box.scrollTop = box.scrollHeight;
+
+            } catch (err) {
+                box.innerHTML += `<div class="chat-bubble chat-bubble-ai" style="color:var(--color-danger);">Error getting response: ${err.message}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+
+        function clearChat() {
+            document.getElementById("chatBox").innerHTML = `
+                <div class="chat-bubble chat-bubble-ai">
+                    Hello! Chat history cleared. How can I help you debug your code today?
+                </div>
+            `;
+        }
+
+        // ================= HISTORY =================
+        async function loadHistory() {
+            try {
+                let res = await fetch("/history");
+                let data = await res.json();
+                let box = document.getElementById("historyBox");
+                box.innerHTML = "";
+
+                if (!data || data.length === 0) {
+                    box.innerHTML = `<div style="font-size: 13px; color: var(--text-secondary); text-align: center; padding: 12px;">No runs found</div>`;
+                    return;
+                }
+
+                data.reverse().forEach((item, index) => {
+                    let badgeClass = item.success ? "pill-green" : "pill-red";
+                    let badgeText = item.success ? "Success" : "Error";
+                    
+                    let card = document.createElement("div");
+                    card.className = "card";
+                    card.style.padding = "10px";
+                    card.style.gap = "8px";
+                    card.style.background = "var(--bg-base)";
+                    
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                            <span style="font-weight:600; text-transform:uppercase; color:var(--text-secondary);">${item.language}</span>
+                            <span class="pill ${badgeClass}" style="font-size:10px; padding:2px 6px;">${badgeText}</span>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-secondary);">${item.timestamp || ""}</div>
+                    `;
+                    box.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ================= STATS =================
+        async function loadStats() {
+            try {
+                let res = await fetch("/history");
+                let data = await res.json();
+                
+                // We count stats based on history to ensure dynamic updates
+                let total = data.length;
+                let errorTypes = {};
+                let errorsCount = 0;
+
+                data.forEach(item => {
+                    if (!item.success) {
+                        errorsCount++;
+                        let type = (item.analysis && item.analysis.error_type) || "Execution Error";
+                        errorTypes[type] = (errorTypes[type] || 0) + 1;
+                    }
+                });
+
+                document.getElementById("statTotalErrors").textContent = total;
+
+                let mostCommon = "None";
+                let mostCount = 0;
+                let leastCommon = "None";
+                let leastCount = 9999;
+
+                for (let type in errorTypes) {
+                    let count = errorTypes[type];
+                    if (count > mostCount) {
+                        mostCount = count;
+                        mostCommon = type + ` (${count})`;
+                    }
+                    if (count < leastCount) {
+                        leastCount = count;
+                        leastCommon = type + ` (${count})`;
+                    }
+                }
+
+                if (mostCount > 0) {
+                    document.getElementById("statMostCommon").textContent = mostCommon;
+                    document.getElementById("statLeastCommon").textContent = leastCommon === "None" || leastCount === 9999 ? mostCommon : leastCommon;
+                } else {
+                    document.getElementById("statMostCommon").textContent = "None";
+                    document.getElementById("statLeastCommon").textContent = "None";
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ================= VOICE OUTPUT =================
+        function speak(text) {
+            if (!("speechSynthesis" in window)) return;
+            window.speechSynthesis.cancel();
+            let msg = new SpeechSynthesisUtterance(text);
+            msg.lang = "en-US";
+            msg.rate = 1.05;
+            window.speechSynthesis.speak(msg);
+        }
+
+        // ================= VOICE INPUT =================
+        function startVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("❌ Voice recognition is not supported in this browser. Please use Google Chrome.");
+                return;
+            }
+
+            let recognition = new SpeechRecognition();
+            recognition.lang = "en-US";
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.start();
+
+            document.getElementById("chatInput").placeholder = "🎤 Listening...";
+
+            recognition.onresult = function(event) {
+                let transcript = event.results[0][0].transcript;
+                document.getElementById("chatInput").value = transcript;
+                document.getElementById("chatInput").placeholder = "Ask details about an error or coding concept...";
+            };
+
+            recognition.onerror = function(event) {
+                document.getElementById("chatInput").placeholder = "Ask details about an error or coding concept...";
+                alert("Voice recognition error: " + event.error);
+            };
+
+            recognition.onend = function() {
+                document.getElementById("chatInput").placeholder = "Ask details about an error or coding concept...";
+            };
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            if (!text) return "";
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Initialize Stats on load
+        window.onload = function() {
+            loadStats();
+        };
+    </script>
+</body>
+</html>
